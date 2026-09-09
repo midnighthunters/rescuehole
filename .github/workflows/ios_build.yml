@@ -1,4 +1,4 @@
-﻿# ==============================================================================
+# ==============================================================================
 # TESTFLIGHT REQUIRED SECRETS (Configure in GitHub Settings -> Secrets -> Actions):
 # ==============================================================================
 # 1. APPLE_TEAM_ID:
@@ -157,6 +157,10 @@ jobs:
           # Ensure ITSAppUsesNonExemptEncryption is false to avoid 'Missing Compliance' stall on TestFlight
           /usr/libexec/PlistBuddy -c "Set :ITSAppUsesNonExemptEncryption false" "$IOS_PROJECT_PATH/Info.plist" 2>/dev/null || \
           /usr/libexec/PlistBuddy -c "Add :ITSAppUsesNonExemptEncryption bool false" "$IOS_PROJECT_PATH/Info.plist" 2>/dev/null || true
+          # Restore executable permissions for shell scripts and symbol processing tools
+          chmod +x "$IOS_PROJECT_PATH"/*.sh 2>/dev/null || true
+          chmod +x "$IOS_PROJECT_PATH"/usymtool* 2>/dev/null || true
+          chmod +x ci/ios/*.py tools/*.py 2>/dev/null || true
 
       - name: Resolve CocoaPods dependencies when present
         shell: bash
