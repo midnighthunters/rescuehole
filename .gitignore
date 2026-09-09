@@ -6,13 +6,22 @@
 [Ll]ibrary/
 [Tt]emp/
 [Oo]bj/
-[Bb]uild/
-[Bb]uilds/
 [Ll]ogs/
 [Uu]ser[Ss]ettings/
 [Mm]emoryCaptures/
 [Rr]ecordings/
+# Local build output (allow committed iOS build)
+/[Bb]uild/*
+!/[Bb]uild/ios/
+/[Bb]uilds/
 
+# Sensitive signing keys, certificates, and provisioning profiles
+*.p8
+*.mobileprovision
+*.key
+*.csr
+*.cer
+*.p12
 # Asset meta files should never be ignored unless asset itself is ignored
 !/[Aa]ssets/**/*.meta
 
