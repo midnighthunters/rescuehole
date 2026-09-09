@@ -321,12 +321,23 @@ jobs:
 
           ipa_path="$GITHUB_WORKSPACE/Builds/ipa/RescueHole.ipa"
           echo "Uploading $ipa_path to TestFlight using xcrun altool..."
+          upload_log="$RUNNER_TEMP/altool_upload.log"
           if xcrun altool --upload-app \
             --type ios \
             --file "$ipa_path" \
             --apiKey "$APP_STORE_CONNECT_KEY_ID" \
-            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"; then
-            echo "=== TestFlight upload successful via altool! ==="
+            --apiIssuer "$APP_STORE_CONNECT_ISSUER_ID" 2>&1 | tee "$upload_log"; then
+            if grep -q "ERROR:\|UPLOAD FAILED" "$upload_log"; then
+              echo "Error detected in altool upload output; falling back to iTMSTransporter..."
+              xcrun iTMSTransporter \
+                -m upload \
+                -assetFile "$ipa_path" \
+                -apiKey "$APP_STORE_CONNECT_KEY_ID" \
+                -apiIssuer "$APP_STORE_CONNECT_ISSUER_ID"
+              echo "=== TestFlight upload successful via iTMSTransporter! ==="
+            else
+              echo "=== TestFlight upload successful via altool! ==="
+            fi
           else
             echo "Warning: altool upload returned an error; attempting fallback upload with iTMSTransporter..."
             xcrun iTMSTransporter \
